@@ -36,6 +36,23 @@ def push(reg,push_item):
     reg.insert(0,push_item)
     return reg
 
+def in_or_out(IOU):
+    if None not in IOU:
+                if IOU[1]>=IOU[0]:
+                    rospy.loginfo(str(IOU))
+                    rospy.loginfo("in")
+                    IOU = [None,None]
+                    #pub.publish("")
+                    pass
+                elif IOU[1]<IOU[0]:
+                    rospy.loginfo(str(IOU))
+                    rospy.loginfo("out")
+                    IOU = [None,None]
+                #pub.publish("")
+                    pass
+
+
+
 # Loop through the video frames
 while cap.isOpened():
     # Read a frame from the video
@@ -62,19 +79,7 @@ while cap.isOpened():
             frames = 0
             iou = get_iou(boxes.xyxy[0],)
             push(IOU,iou)
-            if None not in IOU:
-                if IOU[1]>=IOU[0]:
-                    rospy.loginfo(str(IOU))
-                    rospy.loginfo("in")
-                    IOU = [None,None]
-                    #pub.publish("")
-                    pass
-                elif IOU[1]<IOU[0]:
-                    rospy.loginfo(str(IOU))
-                    rospy.loginfo("out")
-                    IOU = [None,None]
-                #pub.publish("")
-                    pass
+            in_or_out(IOU)
             
             
     except:
