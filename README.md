@@ -23,7 +23,7 @@ yolo_shopping.py --> python=3.9
 ※將影像辨識到且滿足條件的物體，由```/talker``` 節點以```/shopping```的topic發布消息，並由```/listerner```節點接收並儲存購買的物件。  
 ※要結帳時，透過關閉辨識視窗，```/talker```會發布內容為"shutdown"的消息給```/listerner```，```shopping_list.py```會輸出你買的物品明細及價錢
 
-# v2shoppingcart --> 開發中
+# v2shoppingcart --> 新增"偽"介面
 ## --> for win
 不須使用ros環境即可執行，和上面的原理相同
 
