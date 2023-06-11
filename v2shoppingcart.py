@@ -5,12 +5,14 @@ from math import copysign
 import time
 from shapely import Polygon
 import  pandas as pd
+import csv
+
 
 
 ROI = [[0,0],[640,240]]
 IOU = [None,None]
 reg =[None,None]
-
+button_click = False
 reg_dict = {
     "milktea":0,
     "redtea":0,
@@ -31,7 +33,7 @@ cap = cv2.VideoCapture(video_path)
 
 #init
 frames_num =10
-
+total_price = 0
 #data structure --> stack
 def push(reg,push_item):
     reg.pop()
@@ -66,8 +68,49 @@ def shop_list(sign, item):
     reg_dict[item]=reg_dict[item]+sign
     print(reg_dict)
         
+def final_list(f_list):
+    
+    df = pd.DataFrame([reg_dict,price],).T
+    df.columns = ['num', 'value',]
+    df["price"]=df["num"]*df["value"]
+    print("*************************")
+    pd.set_option('display.unicode.ambiguous_as_wide', True)
+    pd.set_option('display.unicode.east_asian_width', True)
+    pd.set_option('display.width', 180)                       # 设置打印宽度(**重要**)
+    print(df)
+    print("*************************")
+    print("                   total:"+str(sum(df["price"])))
+    df.to_csv("total_price.csv", encoding = 'utf_8_sig',)
+    global total_price
+    total_price = sum(df["price"])
 
-def main():
+def button_event(event,x,y,flags,userdata):
+    if event == 1 : 
+        #if x in range(670,870) and y in (350,450) :
+        if 700<x<840 and 350<y<430:
+            print("pay!!!")
+            global button_click 
+            button_click = True
+        
+def show(img):
+    with open("total_price.csv","r",encoding="utf_8") as csvFile : #開啟檔案
+        csvReader = csv.reader(csvFile) #將檔案建立成Reader物件
+        listReport = list(csvReader) #將資料轉成list(串列)
+
+    cv2.rectangle(img, ROI[0], ROI[1], (0, 255, 0), 2)
+    img = cv2.copyMakeBorder(img, 0, 0, 0, 300,0,img, [255,255,255])
+    for i , row in enumerate(listReport):
+        for j,item in enumerate(row):
+            if i==0 and j==0:
+                cv2.putText(img,"type" ,[650+j*80,30+i*20],  cv2.FONT_HERSHEY_TRIPLEX, 0.5, 0)
+            else:
+                cv2.putText(img,item ,[650+j*80,30+i*20],  cv2.FONT_HERSHEY_TRIPLEX, 0.5, 0)
+    cv2.rectangle(img, [700,350],[840,430] , (0, 0, 0), 2)
+    cv2.putText(img,"PAY" ,[720,407],  cv2.FONT_HERSHEY_TRIPLEX, 1.5, 0)
+    cv2.putText(img,"total price:"+str(total_price),[700,300],  cv2.FONT_HERSHEY_TRIPLEX, .5, 0)
+    return img
+
+while True:
     motion = [None,None]
     frames = 0
     # Loop through the video frames
@@ -82,13 +125,12 @@ def main():
             # Visualize the results on the frame
             annotated_frame = results[0].plot()
             boxes = results[0].boxes
-            cv2.rectangle(annotated_frame, ROI[0], ROI[1], (0, 255, 0), 2)
+            annotated_frame = show(annotated_frame)
             # Display the annotated frame
             cv2.imshow("YOLOv8 Inference", annotated_frame)
         else:
             # Break the loop if the end of the video is reached
             break
-    
 
         if frames==frames_num:
             frames = 0
@@ -100,46 +142,28 @@ def main():
                 push(motion,[sign,index2item[int(boxes.cls[-1])]])
                 if motion[0]!=motion[1]:
                     shop_list(sign,index2item[int(boxes.cls[-1])])
+                    totalprice = final_list(reg_dict)
                 
             except:
                 IOU = [None,None]
                 reg =[None,None]
                 motion = [None,None]
                 pass
-
-
-
-
-
         # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord("q") or button_click == True :
             break
+        cv2.setMouseCallback("YOLOv8 Inference", button_event)
+        
+    break
         #shop_list(1,index2item[0])
     # Release the video capture object and close the display window
-    cap.release()
-    cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
 
-def final_list(f_list):
-    total_price = 0
-    df = pd.DataFrame([reg_dict,price],).T
-    df.columns = ['數量', '價錢',]
-    df["總價"]=df["數量"]*df["價錢"]
-    print("*************************")
-    pd.set_option('display.unicode.ambiguous_as_wide', True)
-    pd.set_option('display.unicode.east_asian_width', True)
-    pd.set_option('display.width', 180)                       # 设置打印宽度(**重要**)
-    print(df)
-    print("*************************")
-    print("                   total:"+str(sum(df["總價"])))
-    df.to_csv("total_price.csv", encoding = 'utf_8_sig',)
-    return total_price
+
     
 
 
-
-if __name__ == "__main__":
-    main()
-    totalprice = final_list(reg_dict)
 
 
 
