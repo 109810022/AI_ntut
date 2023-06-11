@@ -28,6 +28,8 @@ yolo_shopping.py --> python=3.9
 # v4shoppingcart --> 新增"偽"介面
 ## --> for win
 不須使用ros環境即可執行，和上面的原理相同
+![螢幕擷取畫面 2023-06-11 150654](https://github.com/109810022/AI_ntut/assets/100888502/d54395f0-ca1c-4634-97a0-19dcb38ad2f5)
+
 
 # 使用函式庫
 ultralytics  
