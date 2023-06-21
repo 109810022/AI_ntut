@@ -5,7 +5,8 @@
 # 原理
 物體辨識:利用ultralytivs 提供之API，獲得每個物件的座標  
 取出&放入: 利用計算IOU的方式，辨識前一幀和後一幀物體和一定範圍的交集面積，若增加-->取出，減少-->放入  
-
+# 最終版本  
+==> UI+shoppingcart
 # shopping_list.py + yolo_shopping.py
 ## 使用方法
 將程式放入ROS的workspace，並執行:    
