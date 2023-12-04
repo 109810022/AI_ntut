@@ -27,7 +27,7 @@ csv
 time  
 
 
-# 結合ROS  
+# 結合ROS =>跑太慢了 放棄xdd  
 ## shopping_list.py + yolo_shopping.py
 ### 使用方法
 將程式放入ROS的workspace，並執行:    
